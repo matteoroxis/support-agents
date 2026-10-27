@@ -1,0 +1,8 @@
+target/
+*.iml
+.idea/
+.vscode/
+# Local secrets (Atlas connection string, API keys)
+.env
+**/config/secrets.yml
+**/config/application*.yml

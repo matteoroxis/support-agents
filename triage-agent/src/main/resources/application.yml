@@ -1,0 +1,38 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: triage-agent
+  config:
+    # Local secrets, ignored by git. Both paths so the agent finds the file whether it is
+    # started from the module folder or from the support-agents root.
+    import:
+      - optional:file:./config/secrets.yml
+      - optional:file:./triage-agent/config/secrets.yml
+  ai:
+    anthropic:
+      # Set ANTHROPIC_API_KEY or put spring.ai.anthropic.api-key in config/secrets.yml.
+      api-key: ${ANTHROPIC_API_KEY:}
+      chat:
+        options:
+          model: ${TRIAGE_MODEL:claude-opus-5-5}
+          max-tokens: 1024
+
+triage:
+  # llm: Spring AI ChatClient with structured output. keyword: deterministic, no API key needed.
+  classifier: llm
+  # Base URL of the billing agent. Its Agent Card is fetched from /.well-known/agent-card.json.
+  billing-agent-url: ${BILLING_AGENT_URL:http://localhost:9999}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: offline
+  ai:
+    model:
+      chat: none
+
+triage:
+  classifier: keyword

@@ -1,0 +1,29 @@
+server:
+  port: 9999
+
+spring:
+  application:
+    name: billing-agent
+  config:
+    # Local secrets, ignored by git. Both paths so the agent finds the file whether it is
+    # started from the module folder or from the support-agents root.
+    import:
+      - optional:file:./config/secrets.yml
+      - optional:file:./billing-agent/config/secrets.yml
+  mongodb:
+    # MongoDB Atlas connection string, e.g. mongodb+srv://<user>:<password>@<cluster>.mongodb.net/
+    # Set MONGODB_URI or put spring.mongodb.uri in config/secrets.yml.
+    uri: ${MONGODB_URI:}
+    database: ${MONGODB_DATABASE:billing-agent}
+
+# The A2A Java SDK is fail-closed: without a TaskAuthorizationProvider bean every task
+# operation is denied and reported as TaskNotFoundError. The demo has no caller identity,
+# so it opts out. In production, authenticate the caller and provide a provider instead.
+a2a:
+  authorization:
+    required: false
+
+billing:
+  agent:
+    # URL advertised in the Agent Card. The JSON-RPC endpoint is POST / on this server.
+    public-url: ${BILLING_AGENT_PUBLIC_URL:http://localhost:9999/}
